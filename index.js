@@ -18,7 +18,6 @@ class MiMultipurposeKettle {
     this.ip = config.ip;
     this.token = config.token;
     this.name = config.name || 'Mi Multipurpose Kettle';
-    this.defaultTemperature = config.defaultTemperature || 60;
 
     let info = new Service.AccessoryInformation();
     let device = new Service.Switch(this.name);
@@ -30,9 +29,15 @@ class MiMultipurposeKettle {
     .on('get', this.getStatus.bind(this))
     .on('set', this.setWork.bind(this));
 
-    /** Looking for accessory + collecting data. */
+    /** Looking for accessory + saving data. */
     this.discover();
     this.services = [device, info];
+
+    /** Custom properties. */
+    if (config.heat && config.time) {
+      this.heat = config.heat;
+      this.time = config.time;
+    }
   }
 
   async getStatus(callback) {
@@ -47,7 +52,7 @@ class MiMultipurposeKettle {
        *    5: Stop
       **/
 
-      callback(null, result === 2 || result === 3 || result === 4 ? true : false);
+      callback(null, result === 2 ? true : false);
     } catch (error) {
       this.log.error('getStatus', error);
       callback(error);
@@ -65,7 +70,23 @@ class MiMultipurposeKettle {
 
   async setWork(state, callback) {
     try {
-      const [result] = await this.device.call('set_work', state ? [2, 18, this.defaultTemperature, 0, 0] : [0, 18, 0, 0, 0]);
+      let code;
+
+      if (state && this.heat && this.time) {
+        /** Applying for the custom mode 1 properties. */
+        await this.setMode();
+
+        /** When custom properties set and device state OFF. */
+        code = [2, 1, 0, 0, 0];
+      } else if (state) {
+        /** When device state OFF. */
+        code = [2, 18, 80, 0, 0];
+      } else {
+        /** When device state ON. */
+        code = [0, 18, 0, 0, 0];
+      }
+
+      const [result] = await this.device.call('set_work', code);
 
       if (result !== 'ok')
       throw new Error(result);
@@ -77,17 +98,25 @@ class MiMultipurposeKettle {
     }
   }
 
+  async setMode() {
+    try {
+      const [result] = await this.device.call('set_mode', [1, this.heat, this.time]);
+
+      if (result !== 'ok')
+      throw new Error(result);
+    } catch (error) {
+      this.log.error('setMode', error);
+    }
+  }
+
   async setVoice() {
     try {
       const [result] = await this.device.call('set_voice', [1]);
 
       if (result !== 'ok')
       throw new Error(result);
-
-      callback();
     } catch (e) {
       this.log.error('setVoice', e);
-      callback(e);
     }
   }
 
