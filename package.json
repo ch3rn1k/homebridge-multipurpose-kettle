@@ -3,11 +3,22 @@
   "version": "1.0.0",
   "description": "Plugin for Homebridge for Xiaomi Multipurpose Kettle",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "keywords": [
+    "homebridge-plugin",
+    "xiaomi",
+    "kettle"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ch3rn1k/homebridge-multipurpose-kettle"
   },
   "author": "ch3rn1k",
-  "license": "ISC",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.4.22",
+    "miio": ">=0.15.6"
+  },
   "dependencies": {
     "miio": "^0.15.6"
   }
