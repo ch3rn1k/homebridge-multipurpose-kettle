@@ -1,2 +1,2 @@
-#H1 homebridge-multipurpose-kettle
+# homebridge-multipurpose-kettle
 Plugin for Homebridge for Xiaomi Multipurpose Kettle
