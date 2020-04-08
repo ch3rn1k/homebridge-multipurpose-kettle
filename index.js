@@ -14,26 +14,25 @@ class MiMultipurposeKettle {
     if (!config.ip) throw new Error('Your must provide IP address of the Multipurpose Kettle!');
     if (!config.token) throw new Error('Your must provide token of the Multipurpose Kettle!');
 
-    let info = new Service.AccessoryInformation();
-    let device = new Service.Switch(config.name);
-
     this.log = log;
     this.ip = config.ip;
     this.token = config.token;
-    this.services = [device, info];
+    this.name = config.name || 'Mi Multipurpose Kettle';
+    this.defaultTemperature = config.defaultTemperature || 60;
 
-    info
-    .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
-    .setCharacteristic(Characteristic.Model, 'Kettle')
-    .setCharacteristic(Characteristic.SerialNumber, 'Undefined')
+    let info = new Service.AccessoryInformation();
+    let device = new Service.Switch(this.name);
+
+    info.setCharacteristic(Characteristic.Manufacturer, 'Xiaomi').setCharacteristic(Characteristic.Model, 'Multipurpose Kettle');
 
     /** On */
     device.getCharacteristic(Characteristic.On)
     .on('get', this.getStatus.bind(this))
     .on('set', this.setWork.bind(this));
 
-    /** Looking for accessory. */
+    /** Looking for accessory + collecting data. */
     this.discover();
+    this.services = [device, info];
   }
 
   async getStatus(callback) {
@@ -66,7 +65,7 @@ class MiMultipurposeKettle {
 
   async setWork(state, callback) {
     try {
-      const [result] = await this.device.call('set_work', state ? [2, 18, 60, 0, 0] : [0, 18, 0, 0, 0]);
+      const [result] = await this.device.call('set_work', state ? [2, 18, this.defaultTemperature, 0, 0] : [0, 18, 0, 0, 0]);
 
       if (result !== 'ok')
       throw new Error(result);
