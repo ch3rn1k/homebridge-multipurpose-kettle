@@ -1,0 +1,14 @@
+{
+  "name": "homebridge-multipurpose-kettle",
+  "version": "1.0.0",
+  "description": "Plugin for Homebridge for Xiaomi Multipurpose Kettle",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ch3rn1k",
+  "license": "ISC",
+  "dependencies": {
+    "miio": "^0.15.6"
+  }
+}
