@@ -100,6 +100,7 @@ class MiMultipurposeKettle {
 
   async setMode() {
     try {
+      await this.device.call('delete_modes', [1]);
       const [result] = await this.device.call('set_mode', [1, this.heat, this.time]);
 
       if (result !== 'ok')

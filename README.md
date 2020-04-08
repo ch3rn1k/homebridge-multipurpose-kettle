@@ -12,9 +12,30 @@ Plugin for [Homebridge](https://github.com/nfarina/homebridge) for Xiaomi Multip
       "accessory": "MiMultipurposeKettle",
       "ip": "192.168.x.xx",
       "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "defaultTemperature": 60,
       "name": "Smart Kettle"
     }
   ]
 }
 ```
+
+### Example config with custom propetries
+```json
+{
+  "accessories": [
+    {
+      "accessory": "MiMultipurposeKettle",
+      "ip": "192.168.x.xx",
+      "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "heat": 60,
+      "time": 5,
+      "name": "Smart Kettle"
+    }
+  ]
+}
+```
+
+#### Attributes
+| Attribute | Optional | Description |
+| ------------ | ------------ | ------------ |
+| heat | yes | Heat power, 1-99 |
+| time | yes | Duration, minutes 1-240 |
