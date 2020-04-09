@@ -28,6 +28,7 @@ Plugin for [Homebridge](https://github.com/nfarina/homebridge) for Xiaomi Multip
       "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       "heat": 60,
       "time": 5,
+      "sound": true,
       "name": "Smart Kettle"
     }
   ]
@@ -39,3 +40,4 @@ Plugin for [Homebridge](https://github.com/nfarina/homebridge) for Xiaomi Multip
 | ------------ | ------------ | ------------ |
 | heat | yes | Heat power, 1-99 |
 | time | yes | Duration, minutes 1-240 |
+| sound | yes | ON/OFF sounds |

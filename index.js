@@ -18,6 +18,11 @@ class MiMultipurposeKettle {
     this.ip = config.ip;
     this.token = config.token;
     this.name = config.name || 'Mi Multipurpose Kettle';
+    if (config.sound) this.sound = config.sound;
+    if (config.heat && config.time) {
+      this.heat = config.heat;
+      this.time = config.time;
+    }
 
     let info = new Service.AccessoryInformation();
     let device = new Service.Switch(this.name);
@@ -32,12 +37,6 @@ class MiMultipurposeKettle {
     /** Looking for accessory + saving data. */
     this.discover();
     this.services = [device, info];
-
-    /** Custom properties. */
-    if (config.heat && config.time) {
-      this.heat = config.heat;
-      this.time = config.time;
-    }
   }
 
   async getStatus(callback) {
@@ -62,6 +61,10 @@ class MiMultipurposeKettle {
   async discover() {
     try {
       this.device = await miio.device({ address: this.ip, token: this.token });
+
+      /** If custom properties presented by user in config. */
+      if (this.heat && this.time) await this.setMode();
+      if (this.sound) await this.setVoice(this.sound ? 1 : 0);
     } catch (error) {
       this.log.error('Failed to discover the device. Next try in 1 min!', error);
       setTimeout(() => { this.discover(); }, 60 * 1000);
@@ -73,9 +76,6 @@ class MiMultipurposeKettle {
       let code;
 
       if (state && this.heat && this.time) {
-        /** Applying for the custom mode 1 properties. */
-        await this.setMode();
-
         /** When custom properties set and device state OFF. */
         code = [2, 1, 0, 0, 0];
       } else if (state) {
@@ -110,9 +110,9 @@ class MiMultipurposeKettle {
     }
   }
 
-  async setVoice() {
+  async setVoice(value) {
     try {
-      const [result] = await this.device.call('set_voice', [1]);
+      const [result] = await this.device.call('set_voice', [value]);
 
       if (result !== 'ok')
       throw new Error(result);
