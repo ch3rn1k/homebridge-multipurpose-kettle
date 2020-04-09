@@ -1,0 +1,83 @@
+{
+  "pluginAlias": "Xiaomi Multipurpose Kettle",
+  "pluginType": "accessory",
+  "singular": false,
+  "headerDisplay": "[Homebridge](https://github.com/nfarina/homebridge) plug-in for the Xiaomi Multipurpose Kettle.",
+  "footerDisplay": "System name of this device is `viomi.health_pot.v1`.\n\nSee [example-config](https://github.com/ch3rn1k/homebridge-multipurpose-kettle/blob/master/README.md#example-config) for more information and instructions.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "accessory": {
+        "title": "Accessory",
+        "type": "string",
+        "default": "MiMultipurposeKettle"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "placeholder": "Smart Kettle",
+        "description": "Name of the accessory for HomeKit."
+      },
+      "ip": {
+        "title": "IP Address",
+        "type": "string",
+        "placeholder": "192.168.x.xx",
+        "format": "ipv4"
+      },
+      "token": {
+        "title": "Token",
+        "type": "string",
+        "placeholder": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "heat": {
+        "title": "Heat",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 99,
+        "description": "Heat power"
+      },
+      "time": {
+        "title": "Time",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 240,
+        "description": "Duration in minutes"
+      },
+      "sound": {
+        "title": "Sound",
+        "type": "boolean",
+        "description": "Sound feature"
+      }
+    },
+    "required": ["accessory", "name", "ip", "token"]
+  },
+  "layout": [
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": ["accessory", "name"]
+    },
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": [
+        {
+          "key": "ip",
+          "flex-basis": "150px"
+        },
+        {
+          "key": "token",
+          "flex-basis": "300px"
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Custom Propetries",
+      "description": "Optional configuration fields.",
+      "expandable": true,
+      "expanded": false,
+      "items": ["heat", "time", "sound"]
+    }
+  ]
+}
