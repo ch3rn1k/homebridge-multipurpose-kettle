@@ -36,8 +36,8 @@ Plugin for [Homebridge](https://github.com/nfarina/homebridge) for Xiaomi Multip
 ```
 
 #### Attributes
-| Attribute | Optional | Description |
-| ------------ | ------------ | ------------ |
-| heat | yes | Heat power, 1-99 |
-| time | yes | Duration, minutes 1-240 |
-| sound | yes | ON/OFF sounds |
+| Attribute | Optional | Type | Description |
+| ------------ | ------------ | ------------ | ------------ |
+| `heat` | yes | Number(1-99) | Heat power |
+| `time` | yes | Number(1-240) | Duration minutes |
+| `sound` | yes | Boolean(true/false) | Sound feature |

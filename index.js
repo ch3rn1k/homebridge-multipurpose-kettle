@@ -63,11 +63,11 @@ class MiMultipurposeKettle {
       this.device = await miio.device({ address: this.ip, token: this.token });
 
       /** If custom properties presented by user in config. */
-      if (this.heat && this.time) await this.setMode();
-      if (this.sound) await this.setVoice(this.sound ? 1 : 0);
+      if (this.heat && this.time) await this.setMode([1, this.heat, this.time]);
+      if (this.sound) await this.setVoice(this.sound ? 0 : 1);
     } catch (error) {
-      this.log.error('Failed to discover the device. Next try in 1 min!', error);
-      setTimeout(() => { this.discover(); }, 60 * 1000);
+      this.log.error('Failed to discover the device. Next try in 2 min!', error);
+      setTimeout(() => { this.discover(); }, 60 * 2 * 1000);
     }
   }
 
@@ -98,13 +98,15 @@ class MiMultipurposeKettle {
     }
   }
 
-  async setMode() {
+  async setMode(array) {
     try {
       await this.device.call('delete_modes', [1]);
-      const [result] = await this.device.call('set_mode', [1, this.heat, this.time]);
+      const [result] = await this.device.call('set_mode', array);
 
       if (result !== 'ok')
       throw new Error(result);
+
+      this.log.info(`Successfully created custom mode with ${this.heat} HEAT and ${this.time} MIN!`);
     } catch (error) {
       this.log.error('setMode', error);
     }
@@ -116,6 +118,8 @@ class MiMultipurposeKettle {
 
       if (result !== 'ok')
       throw new Error(result);
+
+      this.log.info(`Successfully set sound to "${this.sound.toString().toUpperCase()}" state!`);
     } catch (e) {
       this.log.error('setVoice', e);
     }
