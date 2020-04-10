@@ -9,7 +9,7 @@
 
 </span>
 
-Plugin for [Homebridge](https://github.com/homebridge/homebridge) for Xiaomi Multipurpose Kettle device. System name of this device is `viomi.health_pot.v1`.
+[Homebridge](https://github.com/homebridge/homebridge) plugin for Xiaomi Multipurpose Kettle device. System name of this device is `viomi.health_pot.v1`.
 <img src="https://i.imgur.com/WnLsZ2c.jpg" alt="Xiaomi Multipurpose Kettle" height="240">
 
 ### Installation
