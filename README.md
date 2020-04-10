@@ -9,7 +9,7 @@
 
 </span>
 
-[Homebridge](https://github.com/homebridge/homebridge) plugin for Xiaomi Multipurpose Kettle device. System name of this device is `viomi.health_pot.v1`.
+[Homebridge](https://github.com/homebridge/homebridge) plugin for the Xiaomi Multipurpose Kettle. System name of this device is `viomi.health_pot.v1`.
 <img src="https://i.imgur.com/WnLsZ2c.jpg" alt="Xiaomi Multipurpose Kettle" height="240">
 
 ### Installation
@@ -40,7 +40,7 @@ npm install -g miio homebridge-multipurpose-kettle
 }
 ```
 
-### Example config with custom propetries
+### Example config with custom properties
 
 ```json
 {
@@ -52,7 +52,8 @@ npm install -g miio homebridge-multipurpose-kettle
       "name": "Smart Kettle",
       "heat": 60,
       "time": 5,
-      "sound": true
+      "sound": true,
+      "temperature": true
     }
   ]
 }
@@ -60,8 +61,9 @@ npm install -g miio homebridge-multipurpose-kettle
 
 #### Attributes
 
-| Attribute | Optional | Type                 | Description         |
-| --------- | -------- | -------------------- | ------------------- |
-| `heat`    | yes      | Number (1-99)        | Heat power          |
-| `time`    | yes      | Number (1-240)       | Duration in minutes |
-| `sound`   | yes      | Boolean (true/false) | Sound feature       |
+| Attribute     | Optional | Type                 | Description               |
+| ------------- | -------- | -------------------- | ------------------------- |
+| `heat`        | yes      | Number (1-99)        | Heat power                |
+| `time`        | yes      | Number (1-240)       | Duration in minutes       |
+| `sound`       | yes      | Boolean (true/false) | Sounds of interaction     |
+| `temperature` | yes      | Boolean (true/false) | Show temperature of water |

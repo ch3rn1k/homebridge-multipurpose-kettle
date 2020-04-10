@@ -25,18 +25,27 @@ class MiMultipurposeKettle {
     }
 
     let info = new Service.AccessoryInformation();
-    let device = new Service.Switch(this.name);
-
     info.setCharacteristic(Characteristic.Manufacturer, 'Xiaomi').setCharacteristic(Characteristic.Model, 'Multipurpose Kettle');
 
-    /** On */
+    /** Switch + On */
+    let device = new Service.Switch(this.name);
     device.getCharacteristic(Characteristic.On)
     .on('get', this.getStatus.bind(this))
     .on('set', this.setWork.bind(this));
 
-    /** Looking for accessory + saving data. */
-    this.discover();
     this.services = [device, info];
+
+    /** TemperatureSensor + CurrentTemperature */
+    if (config.temperature) {
+      let temperature = new Service.TemperatureSensor();
+      temperature.getCharacteristic(Characteristic.CurrentTemperature)
+      .on('get', this.getTemperature.bind(this));
+
+      this.services.push(temperature);
+    }
+
+    /** Looking for accessory. */
+    this.discover();
   }
 
   async getStatus(callback) {
@@ -51,9 +60,20 @@ class MiMultipurposeKettle {
        *    5: Stop
       **/
 
-      callback(null, result === 2 ? true : false);
+      callback(null, result === 2 || result === 3 || result === 4 ? true : false);
     } catch (error) {
       this.log.error('getStatus', error);
+      callback(error);
+    }
+  }
+
+  async getTemperature(callback) {
+    try {
+      const [result] = await this.device.call('get_prop', ['curr_tempe']);
+
+      callback(null, result);
+    } catch (error) {
+      this.log.error('getTemperature', error);
       callback(error);
     }
   }

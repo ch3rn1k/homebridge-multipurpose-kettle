@@ -41,7 +41,14 @@
       "sound": {
         "title": "Sound",
         "type": "boolean",
-        "description": "Sound feature"
+        "default": true,
+        "description": "Sounds of interaction"
+      },
+      "temperature": {
+        "title": "Temperature",
+        "type": "boolean",
+        "default": true,
+        "description": "Show temperature of water"
       }
     },
     "required": ["name", "ip", "token"]
@@ -68,11 +75,11 @@
     },
     {
       "type": "fieldset",
-      "title": "Custom Propetries",
-      "description": "Optional configuration fields.",
+      "title": "Custom properties",
+      "description": "Optional configuration fields",
       "expandable": true,
       "expanded": false,
-      "items": ["heat", "time", "sound"]
+      "items": ["heat", "time", "sound", "temperature"]
     }
   ]
 }
