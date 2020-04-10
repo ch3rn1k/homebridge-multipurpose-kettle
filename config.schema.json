@@ -1,22 +1,17 @@
 {
-  "pluginAlias": "Xiaomi Multipurpose Kettle",
+  "pluginAlias": "MiMultipurposeKettle",
   "pluginType": "accessory",
   "singular": false,
-  "headerDisplay": "[Homebridge](https://github.com/nfarina/homebridge) plug-in for the Xiaomi Multipurpose Kettle.",
+  "headerDisplay": "[Homebridge](https://github.com/nfarina/homebridge) plugin for the Xiaomi Multipurpose Kettle.",
   "footerDisplay": "System name of this device is `viomi.health_pot.v1`.\n\nSee [example-config](https://github.com/ch3rn1k/homebridge-multipurpose-kettle/blob/master/README.md#example-config) for more information and instructions.",
   "schema": {
     "type": "object",
     "properties": {
-      "accessory": {
-        "title": "Accessory",
-        "type": "string",
-        "default": "MiMultipurposeKettle"
-      },
       "name": {
         "title": "Name",
         "type": "string",
         "placeholder": "Smart Kettle",
-        "description": "Name of the accessory for HomeKit."
+        "description": "Name of the accessory for HomeKit"
       },
       "ip": {
         "title": "IP Address",
@@ -49,13 +44,13 @@
         "description": "Sound feature"
       }
     },
-    "required": ["accessory", "name", "ip", "token"]
+    "required": ["name", "ip", "token"]
   },
   "layout": [
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": ["accessory", "name"]
+      "items": ["name"]
     },
     {
       "type": "flex",
