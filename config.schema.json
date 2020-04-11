@@ -47,7 +47,7 @@
       "temperature": {
         "title": "Temperature",
         "type": "boolean",
-        "default": true,
+        "default": false,
         "description": "Show temperature of water"
       }
     },
