@@ -10,8 +10,25 @@
       "name": {
         "title": "Name",
         "type": "string",
-        "placeholder": "Smart Kettle",
-        "description": "Name of the accessory for HomeKit"
+        "placeholder": "Xiaomi Multipurpose Kettle",
+        "description": "Name of the accessory for HomeKit",
+        "default": "Multipurpose Kettle"
+      },
+      "mode": {
+        "title": "Mode",
+        "description": "Default type of plugin working mode",
+        "type": "string",
+        "oneOf":  [
+          {
+            "title": "Switch",
+            "const": "switch"
+          },
+          {
+            "title": "Thermostat",
+            "const": "thermostat"
+          }
+        ],
+        "default": "switch"
       },
       "ip": {
         "title": "IP Address",
@@ -22,7 +39,18 @@
       "token": {
         "title": "Token",
         "type": "string",
-        "placeholder": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        "placeholder": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "pattern": "^[a-f\\d]{32}$"
+      },
+      "switchMode": {
+        "type": "null",
+        "description": "While using \"Switch Mode\" you will need to configure default HEAT value (1-99) bottom of this text. Siri will work with commands \"ON/OFF\".",
+        "condition": "model.mode=='switch'"
+      },
+      "thermostatMode": {
+        "type": "null",
+        "description": "While using \"Thermostat Mode\" you will need to configure default HEAT value (1-99) bottom of this text. This value will be used as default value on start, but you can change value in HomeKit. Siri will work with commands \"ON/OFF\",  \"Set Kettle to 80 C\".",
+        "condition": "model.mode=='thermostat'"
       },
       "heat": {
         "title": "Heat",
@@ -31,55 +59,42 @@
         "maximum": 99,
         "description": "Heat power"
       },
-      "time": {
-        "title": "Time",
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 240,
-        "description": "Duration in minutes"
-      },
       "sound": {
         "title": "Sound",
         "type": "boolean",
         "default": true,
-        "description": "Sounds of interaction"
+        "description": "Play interaction sounds"
       },
       "temperature": {
         "title": "Temperature",
         "type": "boolean",
         "default": false,
-        "description": "Show temperature of water"
+        "description": "Show water temperature"
       }
     },
-    "required": ["name", "ip", "token"]
+    "required": ["name", "mode", "ip", "token", "heat"]
   },
   "layout": [
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": ["name"]
+      "items": ["name", "mode"]
     },
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": [
-        {
-          "key": "ip",
-          "flex-basis": "150px"
-        },
-        {
-          "key": "token",
-          "flex-basis": "300px"
-        }
-      ]
+      "items": ["ip", "token"]
     },
+    "switchMode",
+    "thermostatMode",
+    "heat",
     {
       "type": "fieldset",
-      "title": "Custom properties",
-      "description": "Optional configuration fields",
+      "title": "Properties",
+      "description": "Optional configuration fields for greater convenience",
       "expandable": true,
       "expanded": false,
-      "items": ["heat", "time", "sound", "temperature"]
+      "items": ["sound", "temperature"]
     }
   ]
 }

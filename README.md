@@ -25,6 +25,10 @@ npm install -g miio homebridge-multipurpose-kettle
 
 1. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin, or update your configuration file manually. See [configuration](#example-config) for a sample to add to your config.json file.
 
+### How to use
+
+From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choose the one you prefer. `Switch` is easy way to use the plugin, like setting default heat value and then using Kettle by the switch. `Thermostat` is a little bit harder way, but in it you can control heat value directly from your phone and using Siri commands like 'Set Kettle to 40C'.
+
 ### Example config
 
 ```json
@@ -32,28 +36,30 @@ npm install -g miio homebridge-multipurpose-kettle
   "accessories": [
     {
       "accessory": "MiMultipurposeKettle",
-      "ip": "192.168.x.xx",
-      "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "ip": "192.168.8.12",
+      "token": "ef70b026cd06dfea54e57c80f40992d6",
+      "mode": "switch",
+      "heat": 60,
       "name": "Smart Kettle"
     }
   ]
 }
 ```
 
-### Example config with custom properties
+### Example config with properties
 
 ```json
 {
   "accessories": [
     {
       "accessory": "MiMultipurposeKettle",
-      "ip": "192.168.x.xx",
-      "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "name": "Smart Kettle",
+      "ip": "192.168.8.12",
+      "token": "ef70b026cd06dfea54e57c80f40992d6",
+      "mode": "switch",
       "heat": 60,
-      "time": 5,
+      "name": "Smart Kettle",
       "sound": true,
-      "temperature": true
+      "temperature": false
     }
   ]
 }
@@ -61,9 +67,13 @@ npm install -g miio homebridge-multipurpose-kettle
 
 #### Attributes
 
-| Attribute     | Optional | Type                 | Description               |
-| ------------- | -------- | -------------------- | ------------------------- |
-| `heat`        | yes      | Number (1-99)        | Heat power                |
-| `time`        | yes      | Number (1-240)       | Duration in minutes       |
-| `sound`       | yes      | Boolean (true/false) | Sounds of interaction     |
-| `temperature` | yes      | Boolean (true/false) | Show temperature of water |
+| Attribute     | Required | Type                          | Description                  |
+| ------------- | -------- | ----------------------------- | ---------------------------- |
+| `accessory`   | yes      | String (MiMultipurposeKettle) | System name of the accessory |
+| `ip`          | yes      | String (192.168.X.XX)         | IP adress of the device      |
+| `token`       | yes      | String (SoMePrEtTyToKeN)      | Token of the device          |
+| `mode`        | yes      | String (switch/thermostat)    | Working mode of the plugin   |
+| `heat`        | yes      | String (1-99)                 | Heat power                   |
+| `name`        | no       | String (Smart Kettle)         | Name of the device           |
+| `sound`       | no       | Boolean (true/false)          | Sounds of interaction        |
+| `temperature` | no       | Boolean (true/false)          | Show temperature of water    |
