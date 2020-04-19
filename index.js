@@ -69,10 +69,7 @@ class MiMultipurposeKettle {
   async getWorkStatus(callback) {
     try {
       const [result] = await this.device.call('get_prop', ['work_status']);
-      /** 1: Reservation   2: Cooking   3: Paused   4: Keeping   5: Stop */
-
-      if (result !== 1 && result !== 2 && result !== 3 && result !== 4 && result !== 5)
-      throw new Error(result);
+      /** 0: Stopped   1: Reservation   2: Cooking   3: Paused   4: Keeping   5: Stop */
 
       callback(null, result === 1 || result === 2 || result === 3 || result === 4 ? true : false);
     } catch (error) {
