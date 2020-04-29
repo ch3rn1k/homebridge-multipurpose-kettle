@@ -67,13 +67,13 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
 
 #### Attributes
 
-| Attribute     | Required | Type                          | Description                  |
-| ------------- | -------- | ----------------------------- | ---------------------------- |
-| `accessory`   | yes      | String (MiMultipurposeKettle) | System name of the accessory |
-| `ip`          | yes      | String (192.168.X.XX)         | IP adress of the device      |
-| `token`       | yes      | String (SoMePrEtTyToKeN)      | Token of the device          |
-| `mode`        | yes      | String (switch/thermostat)    | Working mode of the plugin   |
-| `heat`        | yes      | String (1-99)                 | Heat power                   |
-| `name`        | no       | String (Smart Kettle)         | Name of the device           |
-| `sound`       | no       | Boolean (true/false)          | Sounds of interaction        |
-| `temperature` | no       | Boolean (true/false)          | Show temperature of water    |
+| Attribute     | Required | Type                          | Description                                        |
+| ------------- | -------- | ----------------------------- | -------------------------------------------------- |
+| `accessory`   | yes      | String (MiMultipurposeKettle) | System name of the accessory                       |
+| `ip`          | yes      | String (192.168.X.XX)         | IP adress of the device                            |
+| `token`       | yes      | String (SoMePrEtTyToKeN)      | Token of the device                                |
+| `mode`        | yes      | String (switch/thermostat)    | Working mode of the plugin                         |
+| `heat`        | yes      | String (1-99)                 | Heat power                                         |
+| `name`        | no       | String (Smart Kettle)         | Name of the device                                 |
+| `sound`       | no       | Boolean (true/false)          | Sounds of interaction                              |
+| `temperature` | no       | Boolean (true/false)          | Show temperature of water (only for "switch" mode) |
