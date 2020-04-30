@@ -121,13 +121,20 @@ class MiMultipurposeKettle {
         if (!state) { clearInterval(this.timer); return; }
 
         const [tempatureNow] = await this.device.call('get_prop', ['curr_tempe']);
-        if (this.config.temperature && this.config.mode === 'switch') this.temperature.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
+        if (this.config.temperature && this.config.mode === 'switch') {
+          this.temperature.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
+        } else if (this.config.mode === 'thermostat') {
+          this.thermostat.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
+        }
+
+        this.log.info(`Work in progress! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
 
         /** When saved temperature is more as needed or same - stop work. */
         if (tempatureNow >= this.config.heat) {
           clearInterval(this.timer);
 
           await this.device.call('set_work', [0, 18, 0, 0, 0]);
+
           if (this.config.mode === 'switch') {
             this.switch.updateCharacteristic(Characteristic.On, false);
           } else if (this.config.mode === 'thermostat') {
@@ -135,7 +142,7 @@ class MiMultipurposeKettle {
             this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
           }
 
-          this.log.info(`Work ended! [ TEMP ${tempatureNow}, HEAT - ${this.config.heat}]`);
+          this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
         }
       }, tempertaureInterval * 1000);
 
@@ -150,8 +157,10 @@ class MiMultipurposeKettle {
     try {
       clearInterval(this.timer);
 
+      let convertedHeat = this.heatConverter(value);
+
       /** Creating new mode if degree changed, stoping and starting again. */
-      await this.createMode([modeNumber, this.heatConverter(value), 240]);
+      await this.createMode([modeNumber, convertedHeat, 240]);
       await this.device.call('set_work', [0, 18, 0, 0, 0]);
 
       const [result] = await this.device.call('set_work', [2, modeNumber, 0, 0, 0]);
@@ -161,19 +170,21 @@ class MiMultipurposeKettle {
         const [tempatureNow] = await this.device.call('get_prop', ['curr_tempe']);
         this.thermostat.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
 
+        this.log.info(`Work in progress! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
+
         /** When water temperature is more as needed or same - stop work. */
-        if (tempatureNow >= this.heatConverter(value)) {
+        if (tempatureNow >= convertedHeat) {
           clearInterval(this.timer);
 
           await this.device.call('set_work', [0, 18, 0, 0, 0]);
           this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
           this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
 
-          this.log.info(`Work ended! [ TEMP ${tempatureNow}, HEAT - ${this.heatConverter(value)}]`);
+          this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${convertedHeat}]`);
         }
       }, tempertaureInterval * 1000);
     
-      callback(null, this.heatConverter(value));
+      callback(null, convertedHeat);
     } catch (error) {
       this.log.error('setTemperature', error);
       callback(error);
