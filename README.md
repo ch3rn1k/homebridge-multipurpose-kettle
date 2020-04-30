@@ -27,7 +27,7 @@ npm install -g miio homebridge-multipurpose-kettle
 
 ### How to use
 
-From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choose the one you prefer. `Switch` is easy way to use the plugin, like setting default heat value and then using Kettle by the switch. `Thermostat` is a little bit harder way, but in it you can control heat value directly from your phone and using Siri commands like 'Set Kettle to 40C'.
+From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choose the one you prefer. `Switch` is easy way to use the plugin, like setting default heat value and then using Kettle by the switch. `Thermostat` is a little bit harder way, but in it you can control heat value directly from your phone and using Siri commands like 'Set Kettle to 40C'. **Attention!** Plugin uses celsius metric system!
 
 ### Example config
 
