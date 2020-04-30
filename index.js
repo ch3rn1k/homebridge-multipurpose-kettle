@@ -1,6 +1,7 @@
 const miio = require('miio');
 
 const tempertaureInterval = 5;
+const modeNumber = 8;
 
 let Service, Characteristic;
 
@@ -95,7 +96,7 @@ class MiMultipurposeKettle {
       this.device = await miio.device({ address: this.config.ip, token: this.config.token });
 
       /** If properties presented by user in config. */
-      await this.createMode([1, this.config.heat, 240]);
+      await this.createMode([modeNumber, this.config.heat, 240]);
       if (this.config.sound) await this.setVoice(this.config.sound ? 0 : 1);
     } catch (error) {
       this.log.error('Failed to discover the device. Next try in 2 min!', error);
@@ -112,7 +113,7 @@ class MiMultipurposeKettle {
       if (base !== 0) throw new Error(base);
 
       /** Setting work (ON/OFF). */
-      const [result] = await this.device.call('set_work', state ? [2, 1, 0, 0, 0] : [0, 18, 0, 0, 0]);
+      const [result] = await this.device.call('set_work', state ? [2, modeNumber, 0, 0, 0] : [0, 18, 0, 0, 0]);
       if (result !== 'ok') throw new Error(result);
 
       /** Checking for temperature. */
@@ -133,6 +134,8 @@ class MiMultipurposeKettle {
             this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
             this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
           }
+
+          this.log.info(`Work ended! [ TEMP ${tempatureNow}, HEAT - ${this.config.heat}]`);
         }
       }, tempertaureInterval * 1000);
 
@@ -148,10 +151,10 @@ class MiMultipurposeKettle {
       clearInterval(this.timer);
 
       /** Creating new mode if degree changed, stoping and starting again. */
-      await this.createMode([1, this.heatConverter(value), 240]);
+      await this.createMode([modeNumber, this.heatConverter(value), 240]);
       await this.device.call('set_work', [0, 18, 0, 0, 0]);
 
-      const [result] = await this.device.call('set_work', [2, 1, 0, 0, 0]);
+      const [result] = await this.device.call('set_work', [2, modeNumber, 0, 0, 0]);
       if (result !== 'ok') throw new Error(result);
 
       this.timer = setInterval(async () => {
@@ -165,8 +168,10 @@ class MiMultipurposeKettle {
           await this.device.call('set_work', [0, 18, 0, 0, 0]);
           this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
           this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+
+          this.log.info(`Work ended! [ TEMP ${tempatureNow}, HEAT - ${this.heatConverter(value)}]`);
         }
-      }, 2000);
+      }, tempertaureInterval * 1000);
     
       callback(null, this.heatConverter(value));
     } catch (error) {
@@ -177,14 +182,14 @@ class MiMultipurposeKettle {
 
   async createMode(array) {
     try {
-      await this.device.call('delete_modes', [1]);
+      await this.device.call('delete_modes', [modeNumber]);
 
       const [result] = await this.device.call('set_mode', array);
       if (result !== 'ok') throw new Error(result);
 
       this.config.heat = array[1];
 
-      this.log.info(`Successfully created custom mode with ${array[1]} HEAT!`);
+      this.log.info(`Successfully created custom mode with ${array[1]}°!`);
     } catch (error) {
       this.log.error('createMode', error);
     }
