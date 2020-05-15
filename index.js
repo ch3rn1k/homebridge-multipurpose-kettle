@@ -1,6 +1,6 @@
 const miio = require('miio');
 
-const tempertaureInterval = 5;
+const temperatureInterval = 5;
 const modeNumber = 8;
 
 let Service, Characteristic;
@@ -144,7 +144,7 @@ class MiMultipurposeKettle {
 
           this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
         }
-      }, tempertaureInterval * 1000);
+      }, temperatureInterval * 1000);
 
       callback();
     } catch (error) {
@@ -182,7 +182,7 @@ class MiMultipurposeKettle {
 
           this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${convertedHeat}]`);
         }
-      }, tempertaureInterval * 1000);
+      }, temperatureInterval * 1000);
     
       callback(null, convertedHeat);
     } catch (error) {
@@ -200,7 +200,7 @@ class MiMultipurposeKettle {
 
       this.config.heat = array[1];
 
-      this.log.info(`Successfully created custom mode with ${array[1]}°!`);
+      this.log.info(`Successfully created custom mode with ${array[1]}°C!`);
     } catch (error) {
       this.log.error('createMode', error);
     }
