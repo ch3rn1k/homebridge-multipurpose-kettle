@@ -70,7 +70,7 @@ class MiMultipurposeKettle {
 
   async getWorkStatus(callback) {
     try {
-      const [result] = await this.device.call('get_prop', ['work_status']);
+      const [result] = await this.doMIIO('get_prop', ['work_status']);
       /** 0: Stopped   1: Reservation   2: Cooking   3: Paused   4: Keeping   5: Stop */
 
       callback(null, result === 1 || result === 2 || result === 3 || result === 4 ? (this.config.mode === 'switch' ? true : 1) : (this.config.mode === 'switch' ? false : 0));
@@ -82,7 +82,7 @@ class MiMultipurposeKettle {
 
   async getTemperature(callback) {
     try {
-      const [result] = await this.device.call('get_prop', ['curr_tempe']);
+      const [result] = await this.doMIIO('get_prop', ['curr_tempe']);
 
       callback(null, result);
     } catch (error) {
@@ -109,18 +109,18 @@ class MiMultipurposeKettle {
       clearInterval(this.timer);
 
       /** First of all checking for kettle base status. */
-      const [base] = await this.device.call('get_prop', ['run_status']);
+      const [base] = await this.doMIIO('get_prop', ['run_status']);
       if (base !== 0) throw new Error(base);
 
       /** Setting work (ON/OFF). */
-      const [result] = await this.device.call('set_work', state ? [2, modeNumber, 0, 0, 0] : [0, 18, 0, 0, 0]);
+      const [result] = await this.doMIIO('set_work', state ? [2, modeNumber, 0, 0, 0] : [0, 18, 0, 0, 0]);
       if (result !== 'ok') throw new Error(result);
 
       /** Checking for temperature. */
       this.timer = setInterval(async () => {
         if (!state) { clearInterval(this.timer); return; }
 
-        const [tempatureNow] = await this.device.call('get_prop', ['curr_tempe']);
+        const [tempatureNow] = await this.doMIIO('get_prop', ['curr_tempe']);
         if (this.config.temperature && this.config.mode === 'switch') {
           this.temperature.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
         } else if (this.config.mode === 'thermostat') {
@@ -133,7 +133,7 @@ class MiMultipurposeKettle {
         if (tempatureNow >= this.config.heat) {
           clearInterval(this.timer);
 
-          await this.device.call('set_work', [0, 18, 0, 0, 0]);
+          await this.doMIIO('set_work', [0, 18, 0, 0, 0]);
 
           if (this.config.mode === 'switch') {
             this.switch.updateCharacteristic(Characteristic.On, false);
@@ -161,13 +161,13 @@ class MiMultipurposeKettle {
 
       /** Creating new mode if degree changed, stoping and starting again. */
       await this.createMode([modeNumber, convertedHeat, 240]);
-      await this.device.call('set_work', [0, 18, 0, 0, 0]);
+      await this.doMIIO('set_work', [0, 18, 0, 0, 0]);
 
-      const [result] = await this.device.call('set_work', [2, modeNumber, 0, 0, 0]);
+      const [result] = await this.doMIIO('set_work', [2, modeNumber, 0, 0, 0]);
       if (result !== 'ok') throw new Error(result);
 
       this.timer = setInterval(async () => {
-        const [tempatureNow] = await this.device.call('get_prop', ['curr_tempe']);
+        const [tempatureNow] = await this.doMIIO('get_prop', ['curr_tempe']);
         this.thermostat.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
 
         this.log.info(`Work in progress! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
@@ -176,7 +176,7 @@ class MiMultipurposeKettle {
         if (tempatureNow >= convertedHeat) {
           clearInterval(this.timer);
 
-          await this.device.call('set_work', [0, 18, 0, 0, 0]);
+          await this.doMIIO('set_work', [0, 18, 0, 0, 0]);
           this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
           this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
 
@@ -193,9 +193,9 @@ class MiMultipurposeKettle {
 
   async createMode(array) {
     try {
-      await this.device.call('delete_modes', [modeNumber]);
+      await this.doMIIO('delete_modes', [modeNumber]);
 
-      const [result] = await this.device.call('set_mode', array);
+      const [result] = await this.doMIIO('set_mode', array);
       if (result !== 'ok') throw new Error(result);
 
       this.config.heat = array[1];
@@ -208,7 +208,7 @@ class MiMultipurposeKettle {
 
   async setVoice(value) {
     try {
-      const [result] = await this.device.call('set_voice', [value]);
+      const [result] = await this.doMIIO('set_voice', [value]);
       if (result !== 'ok') throw new Error(result);
 
       this.log.info(`Successfully set sound to "${this.config.sound.toString().toUpperCase()}" state!`);
@@ -224,7 +224,41 @@ class MiMultipurposeKettle {
     return num;
   }
 
+  async doMIIO(type, command) {
+    let isFinished = false;
+
+    const miioPromise = new Promise((resolve) => {
+      this.device.call(type, command)
+      .then((value) => {
+        isFinished = true;
+        resolve(value);
+      });
+    });
+
+    const miioDelayPromise = new Promise((resolve, reject) => {
+      this.sleep(500)
+      .then(() => {
+        if (!isFinished) {
+          this.device.call(type, command)
+          .then(value => resolve(value))
+          .catch(error => {
+            this.sleep(200)
+            .then(() => miioDelayPromise());
+
+            reject(error);
+        });
+        }
+      });
+    });
+    
+    return await Promise.race([miioPromise, miioDelayPromise]);
+  }
+
   getServices() {
     return this.services;
+  }
+
+  sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
