@@ -99,15 +99,15 @@ class MiMultipurposeKettle {
       await this.createMode([modeNumber, this.config.heat, 240]);
       if (this.config.sound) await this.setVoice(this.config.sound ? 0 : 1);
     } catch (error) {
-      this.log.error('Failed to discover the device. Next try in 2 min!', error);
+      this.log.warn('Failed to discover the device. Next try in 2 min!', error);
       setTimeout(() => { this.discover(); }, 60 * 2 * 1000);
     }
   }
 
   async setWork(state, callback) {
-    try {
-      clearInterval(this.timer);
+    clearInterval(this.timer);
 
+    try {
       /** First of all checking for kettle base status. */
       const [base] = await this.doMIIO('get_prop', ['run_status']);
       if (base !== 0) throw new Error(base);
@@ -154,9 +154,9 @@ class MiMultipurposeKettle {
   }
 
   async setTemperature(value, callback) {
-    try {
-      clearInterval(this.timer);
+    clearInterval(this.timer);
 
+    try {
       let convertedHeat = this.heatConverter(value);
 
       /** Creating new mode if degree changed, stoping and starting again. */
@@ -225,23 +225,34 @@ class MiMultipurposeKettle {
   }
 
   async doMIIO(type, command) {
+    this.log.debug(`Recieved new command, working... [${type} -> ${command.toString()}]`);
+
     let isFinished = false;
 
     const miioPromise = new Promise((resolve) => {
       this.device.call(type, command)
       .then((value) => {
+        this.log.debug(`1 DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+
         isFinished = true;
         resolve(value);
       });
     });
 
     const miioDelayPromise = new Promise((resolve, reject) => {
-      this.sleep(500)
+      this.sleep(5000)
       .then(() => {
         if (!isFinished) {
           this.device.call(type, command)
-          .then(value => resolve(value))
-          .catch(error => {
+          .then((value) => {
+            this.log.debug(`2 DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+
+            isFinished = true;
+            resolve(value);
+          })
+          .catch((error) => {
+            this.log.debug(`3 ERROR - "${[error]}"! [${type} -> ${command.toString()}]`);
+
             this.sleep(200)
             .then(() => miioDelayPromise());
 
