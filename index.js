@@ -232,7 +232,7 @@ class MiMultipurposeKettle {
     const miioPromise = new Promise((resolve) => {
       this.device.call(type, command)
       .then((value) => {
-        this.log.debug(`1 DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+        this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
 
         isFinished = true;
         resolve(value);
@@ -245,13 +245,13 @@ class MiMultipurposeKettle {
         if (!isFinished) {
           this.device.call(type, command)
           .then((value) => {
-            this.log.debug(`2 DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+            this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
 
             isFinished = true;
             resolve(value);
           })
           .catch((error) => {
-            this.log.debug(`3 ERROR - "${[error]}"! [${type} -> ${command.toString()}]`);
+            this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()}]`);
 
             this.sleep(200)
             .then(() => miioDelayPromise());
