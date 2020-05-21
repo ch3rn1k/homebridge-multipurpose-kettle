@@ -69,6 +69,8 @@ class MiMultipurposeKettle {
   }
 
   async getWorkStatus(callback) {
+    if (!this.checkDevice()) return;
+
     try {
       const [result] = await this.doMIIO('get_prop', ['work_status']);
       /** 0: Stopped   1: Reservation   2: Cooking   3: Paused   4: Keeping   5: Stop */
@@ -81,6 +83,8 @@ class MiMultipurposeKettle {
   }
 
   async getTemperature(callback) {
+    if (!this.checkDevice()) return;
+
     try {
       const [result] = await this.doMIIO('get_prop', ['curr_tempe']);
 
@@ -105,6 +109,8 @@ class MiMultipurposeKettle {
   }
 
   async setWork(state, callback) {
+    if (!this.checkDevice()) return;
+
     clearInterval(this.timer);
 
     try {
@@ -154,6 +160,8 @@ class MiMultipurposeKettle {
   }
 
   async setTemperature(value, callback) {
+    if (!this.checkDevice()) return;
+
     clearInterval(this.timer);
 
     try {
@@ -192,6 +200,8 @@ class MiMultipurposeKettle {
   }
 
   async createMode(array) {
+    if (!this.checkDevice()) return;
+
     try {
       await this.doMIIO('delete_modes', [modeNumber]);
 
@@ -207,6 +217,8 @@ class MiMultipurposeKettle {
   }
 
   async setVoice(value) {
+    if (!this.checkDevice()) return;
+
     try {
       const [result] = await this.doMIIO('set_voice', [value]);
       if (result !== 'ok') throw new Error(result);
@@ -225,6 +237,8 @@ class MiMultipurposeKettle {
   }
 
   async doMIIO(type, command) {
+    if (!this.checkDevice()) return;
+
     this.log.debug(`Recieved new command, working... [${type} -> ${command.toString()}]`);
 
     let isFinished = false;
@@ -265,6 +279,16 @@ class MiMultipurposeKettle {
     return await Promise.race([miioPromise, miioDelayPromise]);
   }
 
+  checkDevice() {
+    if (!this.device) {
+      this.log.error('No kettle was found...');
+      return false;
+    }
+
+    return true;
+  }
+  
+  /** HELPERS */
   getServices() {
     return this.services;
   }
