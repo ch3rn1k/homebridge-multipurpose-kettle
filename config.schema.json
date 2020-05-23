@@ -71,7 +71,13 @@
         "default": false,
         "description": "Show water temperature",
         "condition": "model.mode=='switch'"
-      }
+      },
+      "sensor": {
+        "title": "Sensor",
+        "type": "boolean",
+        "default": false,
+        "description": "Show occupancy sensor"
+      },
     },
     "required": ["name", "mode", "ip", "token", "heat"]
   },
@@ -95,7 +101,7 @@
       "description": "Optional configuration fields for greater convenience",
       "expandable": true,
       "expanded": false,
-      "items": ["sound", "temperature"]
+      "items": ["sound", "temperature", "sensor"]
     }
   ]
 }

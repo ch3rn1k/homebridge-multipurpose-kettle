@@ -59,7 +59,8 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
       "heat": 60,
       "name": "Smart Kettle",
       "sound": true,
-      "temperature": false
+      "temperature": false,
+      "sensor": false
     }
   ]
 }
@@ -77,3 +78,4 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
 | `name`        | no       | String (Smart Kettle)         | Name of the device                                 |
 | `sound`       | no       | Boolean (true/false)          | Sounds of interaction                              |
 | `temperature` | no       | Boolean (true/false)          | Show temperature of water (only for "switch" mode) |
+| `sensor`      | no       | Boolean (true/false)          | Show occupancy sensor                              |

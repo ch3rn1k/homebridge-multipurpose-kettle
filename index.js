@@ -5,15 +5,15 @@ const modeNumber = 8;
 
 let Service, Characteristic;
 
-module.exports = homebridge => {
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
+module.exports = api => {
+  Service = api.hap.Service;
+  Characteristic = api.hap.Characteristic;
 
-  homebridge.registerAccessory('homebridge-multipurpose-kettle', 'MiMultipurposeKettle', MiMultipurposeKettle);
+  api.registerAccessory('MiMultipurposeKettle', MiMultipurposeKettle);
 }
 
 class MiMultipurposeKettle {
-  constructor(log, config) {
+  constructor(log, config, api) {
     if (!config.ip) throw new Error('Your must provide IP address of the Multipurpose Kettle!');
     if (!config.token) throw new Error('Your must provide token of the Multipurpose Kettle!');
     if (!config.mode) throw new Error('Your must provide mode to use this plugin!');
@@ -21,6 +21,7 @@ class MiMultipurposeKettle {
 
     this.log = log;
     this.config = config;
+    this.api = api;
     this.services = Array();
 
     /** Main info about device. */
@@ -64,8 +65,31 @@ class MiMultipurposeKettle {
       this.services.push(this.thermostat);
     }
 
+    /** If there is sensor active state. */
+    if (config.sensor) {
+      this.sensor = new Service.OccupancySensor('Occupancy Sensor');
+      this.sensor.getCharacteristic(Characteristic.OccupancyDetected)
+      .on('get', this.getBaseStatus.bind(this));
+
+      this.services.push(this.sensor);
+    }
+
     /** Looking for accessory. */
     this.discover();
+  }
+
+  async getBaseStatus(callback) {
+    if (!this.checkDevice()) return;
+
+    try {
+      const [result] = await this.doMIIO('get_prop', ['run_status']);
+      /** 0 - On base, 16 - No kettle placed, 32 - Drycooking protection, 48 - Both */
+
+      callback(null, result === 0 ? 1 : 0);
+    } catch (error) {
+      this.log.error('getBaseStatus', error);
+      callback(error);
+    }
   }
 
   async getWorkStatus(callback) {
@@ -88,7 +112,7 @@ class MiMultipurposeKettle {
     try {
       const [result] = await this.doMIIO('get_prop', ['curr_tempe']);
 
-      callback(null, result);
+      callback(null, result >= 0 ? result : Math.abs(result));
     } catch (error) {
       this.log.error('getTemperature', error);
       callback(error);
@@ -116,7 +140,16 @@ class MiMultipurposeKettle {
     try {
       /** First of all checking for kettle base status. */
       const [base] = await this.doMIIO('get_prop', ['run_status']);
-      if (base !== 0) throw new Error(base);
+      if (base !== 0) {
+        if (this.config.mode === 'switch') {
+          this.switch.updateCharacteristic(Characteristic.On, false);
+        } else if (this.config.mode === 'thermostat') {
+          this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
+          this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+        }
+
+        return;
+      }
 
       /** Setting work (ON/OFF). */
       const [result] = await this.doMIIO('set_work', state ? [2, modeNumber, 0, 0, 0] : [0, 18, 0, 0, 0]);
@@ -166,6 +199,15 @@ class MiMultipurposeKettle {
 
     try {
       let convertedHeat = this.heatConverter(value);
+
+      /** First of all checking for kettle base status. */
+      const [base] = await this.doMIIO('get_prop', ['run_status']);
+      if (base !== 0) {
+        this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
+        this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+
+        return;
+      }
 
       /** Creating new mode if degree changed, stoping and starting again. */
       await this.createMode([modeNumber, convertedHeat, 240]);
