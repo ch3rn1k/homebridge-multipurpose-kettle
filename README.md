@@ -60,7 +60,8 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
       "name": "Smart Kettle",
       "sound": true,
       "temperature": false,
-      "sensor": false
+      "sensor": false,
+      "interval": 10
     }
   ]
 }
@@ -74,8 +75,9 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
 | `ip`          | yes      | String (192.168.X.XX)         | IP adress of the device                            |
 | `token`       | yes      | String (SoMePrEtTyToKeN)      | Token of the device                                |
 | `mode`        | yes      | String (switch/thermostat)    | Working mode of the plugin                         |
-| `heat`        | yes      | String (1-99)                 | Heat power                                         |
+| `heat`        | yes      | Number (1-99)                 | Heat power                                         |
 | `name`        | no       | String (Smart Kettle)         | Name of the device                                 |
 | `sound`       | no       | Boolean (true/false)          | Sounds of interaction                              |
 | `temperature` | no       | Boolean (true/false)          | Show temperature of water (only for "switch" mode) |
 | `sensor`      | no       | Boolean (true/false)          | Show occupancy sensor                              |
+| `interval`    | no       | Number (1-100)                | Update interval in working mode                    |
