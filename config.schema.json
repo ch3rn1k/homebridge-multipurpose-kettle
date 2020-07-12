@@ -78,6 +78,14 @@
         "default": false,
         "description": "Show occupancy sensor"
       },
+      "interval": {
+        "title": "Interval",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 10,
+        "description": "Update interval in seconds for working state"
+      }
     },
     "required": ["name", "mode", "ip", "token", "heat"]
   },
@@ -101,7 +109,7 @@
       "description": "Optional configuration fields for greater convenience",
       "expandable": true,
       "expanded": false,
-      "items": ["sound", "temperature", "sensor"]
+      "items": ["sound", "temperature", "sensor", "interval"]
     }
   ]
 }

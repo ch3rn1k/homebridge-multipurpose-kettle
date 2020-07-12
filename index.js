@@ -1,6 +1,6 @@
 const miio = require('miio');
 
-const temperatureInterval = 5;
+const temperatureInterval = 10;
 const modeNumber = 8;
 
 let Service, Characteristic;
@@ -24,7 +24,7 @@ class MiMultipurposeKettle {
     this.api = api;
     this.services = Array();
 
-    /** Main info about device. */
+    /** Main info about the device. */
     this.deviceInfo = new Service.AccessoryInformation();
     this.deviceInfo.setCharacteristic(Characteristic.Manufacturer, 'Xiaomi').setCharacteristic(Characteristic.Model, 'Multipurpose Kettle').setCharacteristic(Characteristic.SerialNumber, 'viomi.health_pot.v1');
     this.services.push(this.deviceInfo);
@@ -183,7 +183,7 @@ class MiMultipurposeKettle {
 
           this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
         }
-      }, temperatureInterval * 1000);
+      }, (this.config.interval || temperatureInterval) * 1000);
 
       callback();
     } catch (error) {
@@ -232,7 +232,7 @@ class MiMultipurposeKettle {
 
           this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${convertedHeat}]`);
         }
-      }, temperatureInterval * 1000);
+      }, (this.config.interval || temperatureInterval) * 1000);
     
       callback(null, convertedHeat);
     } catch (error) {
