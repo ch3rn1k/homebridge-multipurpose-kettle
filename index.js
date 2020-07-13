@@ -271,13 +271,6 @@ class MiMultipurposeKettle {
     }
   }
 
-  heatConverter(num) {
-    if (num <= 0) return 1;
-    else if (num >= 100) return 99;
-
-    return num;
-  }
-
   async doMIIO(type, command) {
     if (!this.checkDevice()) return;
 
@@ -320,6 +313,14 @@ class MiMultipurposeKettle {
     
     return await Promise.race([miioPromise, miioDelayPromise]);
   }
+  
+  /** HELPERS */
+  heatConverter(num) {
+    if (num <= 0) return 1;
+    else if (num >= 100) return 99;
+
+    return num;
+  }
 
   checkDevice() {
     if (!this.device) {
@@ -329,8 +330,7 @@ class MiMultipurposeKettle {
 
     return true;
   }
-  
-  /** HELPERS */
+
   getServices() {
     return this.services;
   }
