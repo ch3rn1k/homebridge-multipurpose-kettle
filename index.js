@@ -274,7 +274,7 @@ class MiMultipurposeKettle {
   async doMIIO(type, command) {
     if (!this.checkDevice()) return;
 
-    this.log.debug(`Recieved new command, working... [${type} -> ${command.toString()}]`);
+    this.log.debug(`Received new command, working... [${type} -> ${command.toString()}]`);
 
     let isFinished = false;
 
