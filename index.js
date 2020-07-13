@@ -1,7 +1,8 @@
 const miio = require('miio');
 
-const temperatureInterval = 10;
+const temperatureInterval = 5;
 const modeNumber = 8;
+const requestTimeout = 2.5;
 
 let Service, Characteristic;
 
@@ -50,13 +51,12 @@ class MiMultipurposeKettle {
       this.thermostat = new Service.Thermostat(this.config.name || 'Smart Kettle');
 
       /** Metric System Defaults (only celsius). */
-      this.thermostat.getCharacteristic(Characteristic.TemperatureDisplayUnits).setProps({ maxValue: 0, minValue: 0, validValues: [0] });
-      this.thermostat.updateCharacteristic(Characteristic.TemperatureDisplayUnits, 0);
+      this.thermostat.getCharacteristic(Characteristic.TemperatureDisplayUnits).setProps({ maxValue: 0, minValue: 0, validValues: [0] }).updateValue(0);
 
       /** Current Temperature + Target Temperature. */
       this.thermostat.getCharacteristic(Characteristic.CurrentTemperature).on('get', this.getTemperature.bind(this));
       this.thermostat.getCharacteristic(Characteristic.TargetTemperature).setProps({ maxValue: 99, minValue: 1, minStep: 1}).on('set', this.setTemperature.bind(this));
-      this.thermostat.updateCharacteristic(Characteristic.TargetTemperature, this.config.heat);
+      this.thermostat.getCharacteristic(Characteristic.TargetTemperature).updateValue(this.config.heat);
 
       /** Current Mode + Target Mode. */
       this.thermostat.getCharacteristic(Characteristic.CurrentHeatingCoolingState).setProps({ maxValue: 1, minValue: 0, validValues: [0, 1] }).on('get', this.getWorkStatus.bind(this));
@@ -142,10 +142,10 @@ class MiMultipurposeKettle {
       const [base] = await this.doMIIO('get_prop', ['run_status']);
       if (base !== 0) {
         if (this.config.mode === 'switch') {
-          this.switch.updateCharacteristic(Characteristic.On, false);
+          this.switch.getCharacteristic(Characteristic.On).updateValue(false);
         } else if (this.config.mode === 'thermostat') {
-          this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
-          this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+          this.thermostat.getCharacteristic(Characteristic.TargetHeatingCoolingState).updateValue(0);
+          this.thermostat.getCharacteristic(Characteristic.CurrentHeatingCoolingState).updateValue(0);
         }
 
         return;
@@ -160,11 +160,8 @@ class MiMultipurposeKettle {
         if (!state) { clearInterval(this.timer); return; }
 
         const [tempatureNow] = await this.doMIIO('get_prop', ['curr_tempe']);
-        if (this.config.temperature && this.config.mode === 'switch') {
-          this.temperature.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
-        } else if (this.config.mode === 'thermostat') {
-          this.thermostat.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
-        }
+        if (this.config.temperature && this.config.mode === 'switch') this.temperature.getCharacteristic(Characteristic.CurrentTemperature).updateValue(tempatureNow);
+        else if (this.config.mode === 'thermostat') this.thermostat.getCharacteristic(Characteristic.CurrentTemperature).updateValue(tempatureNow);
 
         this.log.info(`Work in progress! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
 
@@ -174,11 +171,10 @@ class MiMultipurposeKettle {
 
           await this.doMIIO('set_work', [0, 18, 0, 0, 0]);
 
-          if (this.config.mode === 'switch') {
-            this.switch.updateCharacteristic(Characteristic.On, false);
-          } else if (this.config.mode === 'thermostat') {
-            this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
-            this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+          if (this.config.mode === 'switch') this.switch.getCharacteristic(Characteristic.On).updateValue(false);
+          else if (this.config.mode === 'thermostat') {
+            this.thermostat.getCharacteristic(Characteristic.TargetHeatingCoolingState).updateValue(0);
+            this.thermostat.getCharacteristic(Characteristic.CurrentHeatingCoolingState).updateValue(0);
           }
 
           this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
@@ -203,8 +199,8 @@ class MiMultipurposeKettle {
       /** First of all checking for kettle base status. */
       const [base] = await this.doMIIO('get_prop', ['run_status']);
       if (base !== 0) {
-        this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
-        this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+        this.thermostat.getCharacteristic(Characteristic.TargetHeatingCoolingState).updateValue(0);
+        this.thermostat.getCharacteristic(Characteristic.CurrentHeatingCoolingState).updateValue(0);
 
         return;
       }
@@ -218,7 +214,7 @@ class MiMultipurposeKettle {
 
       this.timer = setInterval(async () => {
         const [tempatureNow] = await this.doMIIO('get_prop', ['curr_tempe']);
-        this.thermostat.updateCharacteristic(Characteristic.CurrentTemperature, tempatureNow);
+        this.thermostat.getCharacteristic(Characteristic.CurrentTemperature).updateValue(tempatureNow);
 
         this.log.info(`Work in progress! [TEMP ${tempatureNow}, HEAT ${this.config.heat}]`);
 
@@ -227,8 +223,8 @@ class MiMultipurposeKettle {
           clearInterval(this.timer);
 
           await this.doMIIO('set_work', [0, 18, 0, 0, 0]);
-          this.thermostat.updateCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
-          this.thermostat.updateCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+          this.thermostat.getCharacteristic(Characteristic.TargetHeatingCoolingState).updateValue(0);
+          this.thermostat.getCharacteristic(Characteristic.CurrentHeatingCoolingState).updateValue(0);
 
           this.log.info(`Work ended! [TEMP ${tempatureNow}, HEAT ${convertedHeat}]`);
         }
@@ -278,23 +274,35 @@ class MiMultipurposeKettle {
 
     let isFinished = false;
 
-    const miioPromise = new Promise((resolve) => {
+    const miioPromise = new Promise((resolve, reject) => {
       this.device.call(type, command)
       .then((value) => {
         this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
 
+        if (value === 'error') throw new Error();
+
         isFinished = true;
         resolve(value);
+      })
+      .catch((error) => {
+        this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()}]`);
+
+        this.sleep(200)
+        .then(() => miioDelayPromise());
+
+        reject(error);
       });
     });
 
     const miioDelayPromise = new Promise((resolve, reject) => {
-      this.sleep(5000)
+      this.sleep(requestTimeout * 1000)
       .then(() => {
         if (!isFinished) {
           this.device.call(type, command)
           .then((value) => {
             this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+
+            if (value === 'error') throw new Error();
 
             isFinished = true;
             resolve(value);
@@ -306,7 +314,7 @@ class MiMultipurposeKettle {
             .then(() => miioDelayPromise());
 
             reject(error);
-        });
+          });
         }
       });
     });
