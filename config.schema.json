@@ -82,8 +82,8 @@
         "title": "Interval",
         "type": "integer",
         "minimum": 1,
-        "maximum": 100,
-        "default": 10,
+        "maximum": 10,
+        "default": 5,
         "description": "Update interval in seconds for working state"
       }
     },
