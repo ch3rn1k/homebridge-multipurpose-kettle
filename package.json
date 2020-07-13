@@ -16,6 +16,7 @@
   "bugs": {
     "url": "https://github.com/ch3rn1k/homebridge-multipurpose-kettle/issues"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "author": "ch3rn1k",
   "license": "MIT",
   "engines": {
