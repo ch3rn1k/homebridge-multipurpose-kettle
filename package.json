@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ch3rn1k/homebridge-multipurpose-kettle"
+    "url": "git://github.com/ch3rn1k/homebridge-multipurpose-kettle"
   },
   "bugs": {
     "url": "https://github.com/ch3rn1k/homebridge-multipurpose-kettle/issues"
