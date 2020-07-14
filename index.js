@@ -270,14 +270,16 @@ class MiMultipurposeKettle {
   async doMIIO(type, command) {
     if (!this.checkDevice()) return;
 
-    this.log.debug(`Received new command, working... [${type} -> ${command.toString()}]`);
+    if (this.config.debug) this.log.info(`Received new command, working... [${type} -> ${command.toString()}]`);
+    else this.log.debug(`Received new command, working... [${type} -> ${command.toString()}]`);
 
     let isFinished = false;
 
     const miioPromise = new Promise((resolve, reject) => {
       this.device.call(type, command)
       .then((value) => {
-        this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+        if (this.config.debug) this.log.info(`DONE - "${[value]}"! [${type} -> ${command.toString()} ... miioPromise]`);
+        else this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()} ... miioPromise]`);
 
         if (value === 'error') throw new Error();
 
@@ -285,7 +287,8 @@ class MiMultipurposeKettle {
         resolve(value);
       })
       .catch((error) => {
-        this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()}]`);
+        if (this.config.debug) this.log.info(`ERROR - "${[error]}"! [${type} -> ${command.toString()} ... miioPromise]`);
+        else this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()} ... miioPromise]`);
 
         this.sleep(200)
         .then(() => miioDelayPromise());
@@ -300,7 +303,8 @@ class MiMultipurposeKettle {
         if (!isFinished) {
           this.device.call(type, command)
           .then((value) => {
-            this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()}]`);
+            if (this.config.debug) this.log.info(`DONE - "${[value]}"! [${type} -> ${command.toString()} ... miioDelayPromise]`);
+            else this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()} ... miioDelayPromise]`);
 
             if (value === 'error') throw new Error();
 
@@ -308,7 +312,8 @@ class MiMultipurposeKettle {
             resolve(value);
           })
           .catch((error) => {
-            this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()}]`);
+            if (this.config.debug) this.log.info(`ERROR - "${[error]}"! [${type} -> ${command.toString()} ... miioDelayPromise]`);
+            else this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()} ... miioDelayPromise]`);
 
             this.sleep(200)
             .then(() => miioDelayPromise());
