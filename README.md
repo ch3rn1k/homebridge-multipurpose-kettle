@@ -61,7 +61,8 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
       "sound": true,
       "temperature": false,
       "sensor": false,
-      "interval": 10
+      "interval": 5,
+      "debug": false
     }
   ]
 }
@@ -81,3 +82,4 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
 | `temperature` | no       | Boolean (true/false)          | Show temperature of water (only for "switch" mode) |
 | `sensor`      | no       | Boolean (true/false)          | Show occupancy sensor                              |
 | `interval`    | no       | Number (1-100)                | Update interval in working mode                    |
+| `debug`       | no       | Boolean (true/false)          | Custom debug mode in console                       |
