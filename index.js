@@ -281,20 +281,11 @@ class MiMultipurposeKettle {
         if (this.config.debug) this.log.info(`DONE - "${[value]}"! [${type} -> ${command.toString()} ... miioPromise]`);
         else this.log.debug(`DONE - "${[value]}"! [${type} -> ${command.toString()} ... miioPromise]`);
 
-        if (value === 'error') throw new Error();
+        if (value === 'error') miioDelayPromise();
 
         isFinished = true;
         resolve(value);
       })
-      .catch((error) => {
-        if (this.config.debug) this.log.info(`ERROR - "${[error]}"! [${type} -> ${command.toString()} ... miioPromise]`);
-        else this.log.debug(`ERROR - "${[error]}"! [${type} -> ${command.toString()} ... miioPromise]`);
-
-        this.sleep(200)
-        .then(() => miioDelayPromise());
-
-        reject(error);
-      });
     });
 
     const miioDelayPromise = new Promise((resolve, reject) => {
