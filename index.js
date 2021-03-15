@@ -20,9 +20,6 @@ class MiMultipurposeKettle {
     if (!config.mode) throw new Error('Your must provide mode to use this plugin!');
     if (!config.heat) throw new Error('Your must provide default heat value to use this plugin!');
 
-    this.Service = this.api.hap.Service;
-    this.Characteristic = this.api.hap.Characteristic;
-
     this.log = log;
     this.config = config;
     this.api = api;
