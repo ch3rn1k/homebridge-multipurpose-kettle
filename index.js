@@ -6,7 +6,12 @@ const requestTimeout = 2.5;
 
 let Service, Characteristic;
 
-module.exports = (api) => api.registerAccessory('MiMultipurposeKettle', MiMultipurposeKettle);
+module.exports = (api) => {
+  Service = api.hap.Service;
+  Characteristic = api.hap.Characteristic;
+
+  api.registerAccessory('MiMultipurposeKettle', MiMultipurposeKettle);
+};
 
 class MiMultipurposeKettle {
   constructor(log, config, api) {
