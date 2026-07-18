@@ -1,17 +1,28 @@
 {
   "displayName": "Multipurpose Kettle",
   "name": "homebridge-multipurpose-kettle",
-  "version": "2.3.4",
-  "description": "Plugin for Homebridge for Xiaomi Multipurpose Kettle",
-  "main": "index.js",
+  "version": "3.0.0",
+  "type": "module",
+  "description": "Homebridge v2 plugin for the Xiaomi (Viomi) Multipurpose Kettle",
+  "main": "dist/index.js",
+  "exports": "./dist/index.js",
+  "files": [
+    "dist",
+    "config.schema.json",
+    "LICENSE",
+    "README.md"
+  ],
   "keywords": [
     "homebridge-plugin",
+    "homebridge",
     "xiaomi",
-    "kettle"
+    "viomi",
+    "kettle",
+    "miio"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ch3rn1k/homebridge-multipurpose-kettle"
+    "url": "git+https://github.com/ch3rn1k/homebridge-multipurpose-kettle.git"
   },
   "bugs": {
     "url": "https://github.com/ch3rn1k/homebridge-multipurpose-kettle/issues"
@@ -19,11 +30,29 @@
   "author": "ch3rn1k",
   "license": "MIT",
   "engines": {
-    "node": ">=0.12.0",
-    "homebridge": ">=0.4.22",
-    "miio": ">=0.15.6"
+    "node": "^22 || ^24",
+    "homebridge": "^2.0.0"
+  },
+  "scripts": {
+    "build": "rimraf ./dist && tsc",
+    "watch": "tsc --watch",
+    "lint": "oxlint",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run build"
   },
   "dependencies": {
     "miio": "^0.15.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "homebridge": "^2.1.0",
+    "oxlint": "^1.56.0",
+    "prettier": "^3.8.3",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

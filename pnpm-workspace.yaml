@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - homebridge@2.1.0

@@ -2,7 +2,7 @@
   "pluginAlias": "MiMultipurposeKettle",
   "pluginType": "accessory",
   "singular": false,
-  "headerDisplay": "[Homebridge](https://github.com/nfarina/homebridge) plugin for the Xiaomi Multipurpose Kettle.",
+  "headerDisplay": "[Homebridge](https://github.com/homebridge/homebridge) plugin for the Xiaomi Multipurpose Kettle.",
   "footerDisplay": "System name of this device is `viomi.health_pot.v1`.\n\nSee [example-config](https://github.com/ch3rn1k/homebridge-multipurpose-kettle/blob/master/README.md#example-config) for more information and instructions.",
   "schema": {
     "type": "object",
@@ -18,7 +18,7 @@
         "title": "Mode",
         "description": "Default type of plugin working mode",
         "type": "string",
-        "oneOf":  [
+        "oneOf": [
           {
             "title": "Switch",
             "const": "switch"
@@ -85,6 +85,12 @@
         "maximum": 10,
         "default": 5,
         "description": "Update interval in seconds for working state"
+      },
+      "debug": {
+        "title": "Debug",
+        "type": "boolean",
+        "default": false,
+        "description": "Verbose miIO logging in the console"
       }
     },
     "required": ["name", "mode", "ip", "token", "heat"]
@@ -98,7 +104,7 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": [ "ip", "token"]
+      "items": ["ip", "token"]
     },
     "switchMode",
     "thermostatMode",
@@ -109,7 +115,7 @@
       "description": "Optional configuration fields for greater convenience",
       "expandable": true,
       "expanded": false,
-      "items": ["sound", "temperature", "sensor", "interval"]
+      "items": ["sound", "temperature", "sensor", "interval", "debug"]
     }
   ]
 }

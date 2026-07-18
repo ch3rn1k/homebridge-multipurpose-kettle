@@ -12,14 +12,24 @@
 [Homebridge](https://github.com/homebridge/homebridge) plugin for the Xiaomi Multipurpose Kettle. System name of this device is `viomi.health_pot.v1`.
 <img src="https://i.imgur.com/WnLsZ2c.jpg" alt="Xiaomi Multipurpose Kettle" height="240">
 
+> **v3** is rewritten in TypeScript for **Homebridge v2** (ESM-only, Node.js 22/24).
+> On Homebridge v2 the kettle is also exposed over **Matter**, so it works with Apple Home, Google Home, Alexa and other Matter controllers.
+
+### Requirements
+
+- Homebridge **v2.0.0+**
+- Node.js **v22 or v24**
+
 ### Installation
 
-1. Install homebring by following the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki).
-2. Install [miIO](https://github.com/aholstenson/miio/blob/master/README.md) and homebridge-multipurpose-kettle with the following command.
+1. Install Homebridge by following the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki).
+2. Install the plugin (the `miio` dependency is bundled, no global install needed):
 
 ```bash
-npm install -g miio homebridge-multipurpose-kettle
+npm install -g homebridge-multipurpose-kettle
 ```
+
+The easiest way is to search for **Multipurpose Kettle** in the [Homebridge Config UI X](https://github.com/homebridge/homebridge-config-ui-x) plugin tab.
 
 ### Configuration
 
@@ -81,5 +91,5 @@ From **v2.0** there are 2 working mods - `Switch` and `Thermostat`. You can choo
 | `sound`       | no       | Boolean (true/false)          | Sounds of interaction                              |
 | `temperature` | no       | Boolean (true/false)          | Show temperature of water (only for "switch" mode) |
 | `sensor`      | no       | Boolean (true/false)          | Show occupancy sensor                              |
-| `interval`    | no       | Number (1-100)                | Update interval in working mode                    |
+| `interval`    | no       | Number (1-10)                 | Update interval in seconds in working mode         |
 | `debug`       | no       | Boolean (true/false)          | Custom debug mode in console                       |
